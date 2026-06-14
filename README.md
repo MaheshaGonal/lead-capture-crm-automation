@@ -249,7 +249,7 @@ This workflow is available as a done-for-you service:
 I build no-code and low-code automation workflows that save businesses hours every week. Specialising in lead capture, CRM automation, AI-powered pipelines, and client onboarding flows using n8n, Make.com, and the Claude API.
 
 - GitHub: [@MaheshaGonal](https://github.com/MaheshaGonal)
-- LinkedIn: [Add your LinkedIn URL]
+- LinkedIn: [https://www.linkedin.com/in/mahesha-gonal-10836023a/]
 - Email: gonalmahesha@gmail.com
 
 ---
