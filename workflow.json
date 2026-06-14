@@ -1,0 +1,214 @@
+{
+  "name": "Lead Capture + CRM Auto-Entry | Agency Portfolio #1",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-capture",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "9b02c7c9-cccc-45ba-8235-0ec0645d4b27",
+      "name": "Webhook - Receive Lead",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        128
+      ],
+      "webhookId": "lead-capture-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\n\n// Correct path: body → data → fields\nconst fields = input.body?.data?.fields || [];\n\nfunction getField(label) {\n  const f = fields.find(f =>\n    f.label && f.label.toLowerCase().includes(label.toLowerCase())\n  );\n  return (f && f.value) ? String(f.value).trim() : '';\n}\n\n// IST timestamp without any library\nconst now = new Date();\nconst ist = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));\nconst pad = n => String(n).padStart(2, '0');\nconst hours = ist.getUTCHours();\nconst ampm = hours >= 12 ? 'PM' : 'AM';\nconst hours12 = hours % 12 || 12;\nconst timestamp = `${pad(ist.getUTCDate())}/${pad(ist.getUTCMonth()+1)}/${ist.getUTCFullYear()}, ${pad(hours12)}:${pad(ist.getUTCMinutes())} ${ampm}`;\n\nconst lead = {\n  lead_name:    getField('name')    || 'Unknown',\n  lead_email:   getField('email')   || '',\n  lead_phone:   getField('phone')   || getField('number') || '',\n  lead_source:  input.body?.data?.hidden?.source || 'Website Form',\n  lead_message: getField('message') || getField('enquiry') || '',\n  timestamp:    timestamp,\n  status:       'New'\n};\n\nreturn [{ json: lead }];"
+      },
+      "id": "c3f91e58-5d9d-459c-85eb-18d68ac4c351",
+      "name": "Normalize Lead Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -192,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1iRi6SkK_qBifp_aV9jxflAZZagTkQol6Zp_L5aVIvc4/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Leads",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "11e2acbd-74b7-41c2-b2f6-819516adbc80",
+      "name": "Add to Google Sheets CRM",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        32,
+        -80
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "dQXSTMeqIwNYv40M",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Normalize Lead Data').item.json.lead_email }}",
+        "subject": "=Thanks for reaching out, {{ $('Normalize Lead Data').item.json.lead_name }}!",
+        "message": "=<p>Hi {{ $('Normalize Lead Data').item.json.lead_name }},</p>\n<p>Thank you for getting in touch! We have received your enquiry and will get back to you within 24 hours.</p>\n<p><strong>Your submission:</strong></p>\n<ul>\n  <li>Name: {{ $('Normalize Lead Data').item.json.lead_name }}</li>\n  <li>Email: {{ $('Normalize Lead Data').item.json.lead_email }}</li>\n  <li>Message: {{ $('Normalize Lead Data').item.json.lead_message }}</li>\n</ul>\n<p>Warm regards,<br>The Team</p>",
+        "options": {}
+      },
+      "id": "c35d4989-f6f8-45b5-9ca9-98f93c17bca4",
+      "name": "Send Welcome Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2,
+      "position": [
+        16,
+        128
+      ],
+      "webhookId": "cec9ef62-15f2-45ef-87f8-a817bd6518c9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "8CEM3FHASLH4wFfx",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "8232453808",
+        "text": "=🔔 *New Lead Alert!*\n\n👤 *Name:* {{ $('Normalize Lead Data').item.json.lead_name }}\n📧 *Email:* {{ $('Normalize Lead Data').item.json.lead_email }}\n📱 *Phone:* {{ $('Normalize Lead Data').item.json.lead_phone }}\n📍 *Source:* {{ $('Normalize Lead Data').item.json.lead_source }}\n💬 *Message:* {{ $('Normalize Lead Data').item.json.lead_message }}\n🕐 *Time:* {{ $('Normalize Lead Data').item.json.timestamp }}\n\n✅ Added to CRM automatically.",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "04843709-2156-45e0-8ad7-2440b3ff16de",
+      "name": "Telegram Alert to Owner",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        32,
+        304
+      ],
+      "webhookId": "ee2ec6de-ec1d-4856-886d-ae6fb0a8af06",
+      "credentials": {
+        "telegramApi": {
+          "id": "Gn2sUfplXHBfM3S2",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={ \"status\": \"success\", \"message\": \"Lead received. Thank you!\" }",
+        "options": {}
+      },
+      "id": "0fefce24-36bd-427e-ab9f-6e4cb1b42057",
+      "name": "Respond to Form",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        256,
+        128
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook - Receive Lead": {
+      "main": [
+        [
+          {
+            "node": "Normalize Lead Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Lead Data": {
+      "main": [
+        [
+          {
+            "node": "Add to Google Sheets CRM",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Welcome Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Telegram Alert to Owner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add to Google Sheets CRM": {
+      "main": [
+        [
+          {
+            "node": "Respond to Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "24852714-6092-4481-9140-cc70b7635197",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "eb2d285fc62d3e9d8e33adab84761c00048fded923a5274a3a15ee988ba0294e"
+  },
+  "nodeGroups": [],
+  "id": "8UOSv2WznztJYHLR",
+  "tags": [
+    {
+      "name": "CRM",
+      "id": "0YQKc1CbzwIlnBWn",
+      "updatedAt": "2026-06-14T04:05:34.444Z",
+      "createdAt": "2026-06-14T04:05:34.444Z"
+    },
+    {
+      "name": "Agency Portfolio",
+      "id": "g2bBohogfS4PzUyZ",
+      "updatedAt": "2026-06-14T04:05:34.469Z",
+      "createdAt": "2026-06-14T04:05:34.469Z"
+    },
+    {
+      "name": "Lead Capture",
+      "id": "xW5arhkTa1PuQNjo",
+      "updatedAt": "2026-06-14T04:05:34.492Z",
+      "createdAt": "2026-06-14T04:05:34.492Z"
+    }
+  ]
+}

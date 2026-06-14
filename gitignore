@@ -1,0 +1,23 @@
+# Credentials — never commit these
+.env
+*.env.local
+
+# n8n local data
+.n8n/
+n8n-data/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+logs/
+
+# Node (if using n8n locally via npm)
+node_modules/
