@@ -228,7 +228,7 @@ lead-capture-crm-automation/
 
 
 - GitHub: [@MaheshaGonal](https://github.com/MaheshaGonal)
-- LinkedIn: [https://www.linkedin.com/in/mahesha-gonal-10836023a/]
+- LinkedIn: [Mahesha Gonal](https://www.linkedin.com/in/mahesha-gonal-10836023a/)
 - Email: gonalmahesha@gmail.com
 
 ---
