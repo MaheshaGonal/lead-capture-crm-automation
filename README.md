@@ -55,7 +55,6 @@ Return success JSON
 | Welcome email delivered | Personalised with lead's name and message |
 | Telegram notification | Full lead card with all details |
 
-> 📹 **[Watch the full demo on Loom](#)** ← replace with your Loom link
 
 ---
 
