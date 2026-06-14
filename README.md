@@ -225,27 +225,7 @@ lead-capture-crm-automation/
 ### Welcome email delivered
 ![Welcome email](screenshots/welcome-email.png)
 
----
 
-## Pricing (Agency Service)
-
-This workflow is available as a done-for-you service:
-
-| Package | What's included | Price |
-|---------|----------------|-------|
-| Starter | Setup + 1 form + Google Sheet CRM + Telegram alerts | $500 |
-| Growth | Starter + welcome email + duplicate check + 30 days support | $900 |
-| Custom | Multi-form, multi-CRM, custom logic | Contact me |
-
-**[Book a free 15-min call](#)** ← replace with Calendly link
-
----
-
-## About the Builder
-
-**Mahesha Gonal** — Automation Engineer & Agency Builder
-
-I build no-code and low-code automation workflows that save businesses hours every week. Specialising in lead capture, CRM automation, AI-powered pipelines, and client onboarding flows using n8n, Make.com, and the Claude API.
 
 - GitHub: [@MaheshaGonal](https://github.com/MaheshaGonal)
 - LinkedIn: [https://www.linkedin.com/in/mahesha-gonal-10836023a/]
